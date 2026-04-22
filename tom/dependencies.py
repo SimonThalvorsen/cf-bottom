@@ -63,7 +63,7 @@ class UpdateChecker:
         options_lines = options_file.splitlines()
         if branch == "3.7.x":
             filtered_lines = (
-                x for x in options_lines if re.match('\s*DEPS=".*\\$DEPS', x)
+                x for x in options_lines if re.match(r'\s*DEPS=".*\$DEPS', x)
             )
             only_deps = (re.sub("\\$?DEPS", "", x) for x in filtered_lines)
             only_deps = (re.sub('[=";]', "", x) for x in only_deps)
@@ -183,7 +183,7 @@ class UpdateChecker:
             version = re.search("w32-([0-9-]*)-rel", filename).group(1)
             separator = "-"
         else:
-            version = re.search("[-_]([0-9.]*)[\.-]", filename).group(1)
+            version = re.search(r"[-_]([0-9.]*)[\.-]", filename).group(1)
             separator = "."
         return (version, separator)
 
@@ -437,7 +437,7 @@ class UpdateChecker:
                 # \[([a-z0-9-]*)\] will match [PHP]
                 # \((.*?)\) will match (http://php.net/)
                 match = re.match(
-                    "\| \[([a-z0-9-]*)\]\((.*?)\) ", line, flags=re.IGNORECASE
+                    r"\| \[([a-z0-9-]*)\]\((.*?)\) ", line, flags=re.IGNORECASE
                 )
                 if match:
                     dep_title = match.group(1)
@@ -454,7 +454,7 @@ class UpdateChecker:
                     )
                     deps_table[dep] = collections.defaultdict(lambda: "-")
                 if has_notes:
-                    note = re.search("\| ([^|]*) \|$", line)
+                    note = re.search(r"\| ([^|]*) \|$", line)
                     if not note:
                         log.warn("didn't find note in line [%s]", line)
                         note = ""

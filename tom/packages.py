@@ -44,9 +44,9 @@ def is_branch_or_version(string):
     optionally followed by letter (3.12.5b) for aplha/beta/gamma...zeta,
     optionally followed by release (3.12.5-2).
     """
-    if string == "master" or re.match("3\.\\d+\.x$", string):
+    if string == "master" or re.match(r"3\.\d+\.x$", string):
         return "branch"
-    if re.match("3\\.\\d+\\.\\d+[a-z]?(-\\d+)?$", string):
+    if re.match(r"3\.\d+\.\d+[a-z]?(-\d+)?$", string):
         return "version"
     return None
 
