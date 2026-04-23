@@ -29,8 +29,8 @@ class ChangelogGenerator:
 
     repos_root = ".."
     changelog_filenames = {
-        "core": "ChangeLog",
-        "enterprise": "ChangeLog.Enterprise",
+        "core": "CHANGELOG.md",
+        "enterprise": "CHANGELOG.md",
         "masterfiles": "CHANGELOG.md",
     }
 
@@ -57,7 +57,7 @@ class ChangelogGenerator:
         changelog_lines = changelog_file.splitlines()
         for i in range(5):
             # look for line having proper version
-            m = re.match("^([0-9]+\\.[0-9]+\\.[0-9]+):$", changelog_lines[i])
+            m = re.match("^## ([0-9]+\\.[0-9]+\\.[0-9]+)$", changelog_lines[i])
             if m:
                 return (
                     "\n".join(changelog_lines[:i]),
@@ -68,8 +68,8 @@ class ChangelogGenerator:
             (
                 "Failed to find version in changelog "
                 + "file, top 5 lines are: {}. Remember that version should be "
-                + "three groups of numbers separated by dots and ending with "
-                + 'colon, for example "3.12.0:"'
+                + "three groups of numbers separated by dots and prefixed "
+                + 'with a markdown h2 header, for example "## 3.12.0"'
             ).format(changelog_lines[:5])
         )
 
@@ -143,8 +143,9 @@ class ChangelogGenerator:
             new_changelog = self.get_changelog_for(name, "--repo", old_version, branch)
             changelog_contents = (
                 header
+                + "## "
                 + new_version
-                + ":\n"
+                + "\n"
                 + new_changelog
                 + "\n"
                 + old_changelog
@@ -159,11 +160,12 @@ class ChangelogGenerator:
                 "buildscripts", "--repo", old_version, branch
             )
             changelog_contents = (
-                new_version
-                + ":\n"
+                "## "
+                + new_version
+                + "\n"
                 + changelog_enterprise
                 + "\n"
-                + "\tPackaging changes:\\n"
+                + "**Packaging changes:**\n"
                 + changelog_buildscripts
                 + "\n"
                 + old_changelog
