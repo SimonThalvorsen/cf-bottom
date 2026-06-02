@@ -1,6 +1,5 @@
 import re
 import os
-import requests
 import subprocess
 import datetime
 import hashlib

@@ -1,6 +1,5 @@
 import re
 import json
-import requests
 import collections
 import datetime
 import hashlib
@@ -8,6 +7,7 @@ import urllib.request
 import logging as log
 from tom.git import GitRepo
 from tom.utils import pretty
+import tom.network as network
 
 
 class DependencyException(Exception):
@@ -137,7 +137,7 @@ class UpdateChecker:
         try:
             if not sha256 and url.startswith("http"):
                 log.debug("testing with HEAD")
-                r = requests.head(url)
+                r = network.head(url)
                 return r.status_code >= 200 and r.status_code < 300
             else:
                 log.debug("getting whole file")
@@ -222,7 +222,7 @@ class UpdateChecker:
         id = self.monitoring_ids[dep]
         url = "https://release-monitoring.org/api/v2/versions/?project_id={}".format(id)
         try:
-            data = requests.get(url).json()
+            data = network.get(url).json()
         except:
             raise ReleaseMonitoringException(
                 "Failed to do a request to release-monitoring.org website"
@@ -255,7 +255,7 @@ class UpdateChecker:
         dist_file = self.buildscripts.get_file(dist_file_path)
         dist_file = dist_file.strip()
         old_filename = re.sub(".* ", "", dist_file)
-        (old_version, separator) = self.extract_version_from_filename(dep, old_filename)
+        old_version, separator = self.extract_version_from_filename(dep, old_filename)
         return old_version
 
     def patch_spec_file(self, spec_file_path, old_version, new_version):
@@ -283,7 +283,7 @@ class UpdateChecker:
         source_file = source_file.strip()
         old_filename = re.sub(".* ", "", dist_file)
         old_url = "{}{}".format(source_file, old_filename)
-        (old_version, separator) = self.extract_version_from_filename(dep, old_filename)
+        old_version, separator = self.extract_version_from_filename(dep, old_filename)
         new_version = self.get_version_from_monitoring(dep)
         if not new_version:
             log.warning(

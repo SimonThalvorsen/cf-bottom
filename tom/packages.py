@@ -1,8 +1,8 @@
 import re
 import json
-import requests
 import collections
 import datetime
+import tom.network as network
 from tom.git import GitRepo
 
 
@@ -125,7 +125,7 @@ class PackageMapper:
                 releases_url = (
                     "https://cfengine.com/release-data/%s/releases.json" % product
                 )
-                releases_request = requests.get(releases_url)
+                releases_request = network.get(releases_url)
                 if not releases_request.ok:
                     raise URLDownloadFailureException(
                         "failed to download %s, return code %d"
@@ -233,7 +233,7 @@ class PackageMapper:
 
     def collect_packages(self, url):
         """Given a release URL, returns a dict where keys are platform names, and values are {'url': 'http...'}"""
-        release_request = requests.get(url)
+        release_request = network.get(url)
         if not release_request.ok:
             raise URLDownloadFailureException(
                 "failed to download %s, return code %d"

@@ -113,8 +113,6 @@ def main():
         log.basicConfig(level=numeric_level, format=fmt)
     else:
         log.basicConfig(format=fmt)
-    log.getLogger("requests").setLevel(log.WARNING)
-    log.getLogger("urllib3").setLevel(log.WARNING)
     if args.talk_user:
         run_talk(args.directory, args.talk_user, args.interactive)
     else:
