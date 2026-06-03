@@ -1,14 +1,13 @@
 import random
-import requests
 import re
 import os
 import sys
 import json
 import datetime
 import logging as log
-import requests
 from copy import copy
 
+import tom.network as network
 from tom.utils import pretty, write_json
 
 # Global constant, reused many times for finding emails in comments:
@@ -36,7 +35,7 @@ class GitHub:
         if path in self.get_cache:
             log.debug("Found in cache")
             return self.get_cache[path]
-        r = requests.get(path, headers=self.headers)
+        r = network.get(path, headers=self.headers)
         log.debug("RESPONSE {}".format(r.status_code))
 
         if not (200 <= r.status_code < 300):
@@ -74,7 +73,7 @@ class GitHub:
             return None
         self.api_log("POST {} {}".format(path, data))
         path = self.path(path)
-        r = requests.post(path, headers=self.headers, json=data)
+        r = network.post(path, headers=self.headers, json=data)
         log.debug("RESPONSE {}".format(r.status_code))
         if check_status_code:
             assert r.status_code >= 200 and r.status_code < 300, r.text
@@ -388,7 +387,7 @@ class GitHubInterface:
         last_branch = self.find_last_branch_in_repo(username, repo)
         log.info("last branch: " + last_branch)
         # now, try to find a parent for it.
-        (parent_repo, parent_branch) = self.find_parent(username, repo, last_branch)
+        parent_repo, parent_branch = self.find_parent(username, repo, last_branch)
         log.info("parent branch: " + parent_branch)
         pr_text = self.github.create_pr(
             parent_repo, parent_branch, username, last_branch, last_branch + " PR", ""
@@ -507,7 +506,7 @@ class PR:
                 log.info("Found related PR in {}: #{}".format(repo, repo_pr))
                 self.merge_with[repo] = repo_pr
 
-        # All of these require extra API requests, and will be completed
+        # All of these require extra API network, and will be completed
         # by the @property getter functions below only when necessary.
         # (The bot can be configured with more or less features in config.json)
 

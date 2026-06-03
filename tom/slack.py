@@ -3,9 +3,9 @@ import traceback
 import re
 import sys
 import json
-import requests
 import logging as log
 from tom.utils import pretty
+import tom.network as network
 
 
 class Slack:
@@ -36,7 +36,7 @@ class Slack:
             url = self.api(url)
         if not "token" in data:
             data["token"] = self.bot_token
-        r = requests.post(url, data)
+        r = network.post(url, data)
         assert r.status_code >= 200 and r.status_code < 300
         try:
             log.debug(pretty(r.json()))

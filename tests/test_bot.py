@@ -248,8 +248,8 @@ bot = Bot(config, config["secrets_data"], directory, interactive, reports)
 print("bot = {}".format(bot))
 
 
-@patch("tom.jenkins.requests")
-@patch("tom.github.requests")
+@patch("tom.jenkins.network")
+@patch("tom.github.network")
 def _trigger_build(
     github_requests, jenkins_requests, prs, comment, repo, base_branch="master"
 ):

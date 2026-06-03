@@ -1,6 +1,5 @@
 import re
 import os
-import requests
 import subprocess
 import datetime
 import hashlib
@@ -125,7 +124,7 @@ class ChangelogGenerator:
             return False
 
         # find old and new versions
-        (header, old_version, old_changelog) = self.split_changelog_into_parts(
+        header, old_version, old_changelog = self.split_changelog_into_parts(
             changelog_filename, repo
         )
         if header != "":

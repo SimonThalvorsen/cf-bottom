@@ -1,7 +1,7 @@
 import logging as log
 from time import sleep
-import requests
-from requests.auth import HTTPBasicAuth
+import base64
+import tom.network as network
 from tom.utils import pretty
 import os
 from typing import Dict
@@ -20,7 +20,7 @@ class Jenkins:
         self.crumb = crumb
         self.username = username
 
-        self.auth = HTTPBasicAuth(user, token)
+        self.auth = base64.b64encode(("%s:%s" % (user, token)).encode()).decode()
 
         self.headers = {}
         if crumb:
@@ -34,7 +34,7 @@ class Jenkins:
         if os.getenv("TOM") == "PASSIVE":
             print("Would post: " + path)
             return None
-        r = requests.post(path, data=data, headers=self.headers, auth=self.auth)
+        r = network.post(path, data=data, headers=self.headers, auth=self.auth)
         if not (200 <= r.status_code < 300):
             log.error("Unexpected HTTP response from Jenkins: {}".format(r.status_code))
             log.error(str(r.headers))
@@ -144,7 +144,7 @@ class Jenkins:
         while "executable" not in queue_item:
             log.info("Waiting for jenkins build in queue")
             sleep(1)
-            r = requests.get(url + "api/json", headers=self.headers, auth=self.auth)
+            r = network.get(url + "api/json", headers=self.headers, auth=self.auth)
             assert r.status_code >= 200 and r.status_code < 300
             queue_item = r.json()
         log.debug(pretty(queue_item))
